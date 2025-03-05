@@ -1,8 +1,6 @@
 import 'dart:io';
 
 void addComponent(String component) {
-  updatePubspec(); // Update pubspec before copying files
-
   final source = File('components/$component.dart');
   final destination = File('flicker/lib/widgets/$component.dart');
 
