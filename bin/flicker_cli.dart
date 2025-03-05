@@ -52,13 +52,7 @@ void initializeFlicker() {
   // Modify pubspec.yaml to include flicker as a dependency
   final pubspecFile = File('pubspec.yaml');
   if (pubspecFile.existsSync()) {
-    final content = pubspecFile.readAsStringSync();
-    if (!content.contains('  flicker:')) {
-      pubspecFile.writeAsStringSync(
-        '$content\n  flicker:\n    path: ./flicker\n',
-        mode: FileMode.append,
-      );
-    }
+    updatePubspec();
   }
 
   print('Flicker package initialized. Run `dart pub get`.');
