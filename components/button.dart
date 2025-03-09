@@ -1,13 +1,23 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-class CustomButton extends StatelessWidget {
+class FlickerButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
 
-  const CustomButton({super.key, required this.text, this.onPressed});
+  const FlickerButton({
+    super.key,
+    required this.text,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: onPressed, child: Text(text));
+    return TapRegion(
+      onTapInside: (pointer) {
+        ///
+        debugPrint("Tap inside");
+      },
+      child: Text(text),
+    );
   }
 }
