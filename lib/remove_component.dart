@@ -1,21 +1,33 @@
 import 'dart:io';
 
-void removeComponent(String name) {
-  final targetPath = 'flicker/lib/widgets/$name.dart';
-  final flickerFile = File('flicker/lib/flicker.dart');
+void removeComponent(String component) {
+  // Paths to the component files and the export file
+  final componentPath = 'flicker/lib/widgets/$component/';
+  final exportFilePath = 'flicker/lib/widgets/widgets.dart';
 
-  if (!File(targetPath).existsSync()) {
-    print('Component "$name" does not exist.');
+  // Check if the component file exists at the destination
+  final componentDir = Directory(componentPath);
+  if (!componentDir.existsSync()) {
+    print('❌ Error: $component does not exist in the destination!');
     return;
   }
 
-  // Delete component
-  File(targetPath).deleteSync();
+  // Delete the component file at the destination
+  componentDir.deleteSync(recursive: true);
+  print('✅ Removed $component.dart from flicker/lib/widgets/$component/');
 
-  // Remove export
-  final exports = flickerFile.readAsStringSync().split('\n');
-  exports.removeWhere((line) => line.contains("export 'widgets/$name.dart';"));
-  flickerFile.writeAsStringSync(exports.join('\n'));
+  // Remove the export statement for the component in widgets.dart
+  final exportFile = File(exportFilePath);
 
-  print('Removed "$name" component.');
+  if (exportFile.existsSync()) {
+    final exportText = "export '$component/$component.dart';\n";
+    final content = exportFile.readAsStringSync();
+
+    // Remove the exact export line from the content
+    final newContent = content.replaceAll(exportText, '');
+
+    // Write the updated content back to widgets.dart
+    exportFile.writeAsStringSync(newContent);
+    print('✅ Removed export statement for $component from widgets.dart');
+  }
 }

@@ -1,25 +1,29 @@
 import 'dart:io';
+
 import 'package:args/args.dart';
-import 'package:flicker_cli/flicker_cli.dart';
+import 'package:flicker_cli/lib.dart';
 
 void main(List<String> arguments) {
-  final parser =
-      ArgParser()
-        ..addCommand('init')
-        ..addCommand('add')
-        ..addCommand('remove');
+  final parser = ArgParser()
+    ..addCommand('init')
+    ..addCommand('add')
+    ..addCommand('remove')
+    ..addCommand('re-init');
 
   final argResults = parser.parse(arguments);
   final command = argResults.command?.name;
 
   switch (command) {
+    case 're-init':
+      initializeFlicker(overwrite: true);
+      break;
     case 'init':
       initializeFlicker();
       break;
     case 'add':
       final component = argResults.command!.rest.firstOrNull;
       if (component == null) {
-        print('Usage: dart run flicker_cli add <component>');
+        print('Usage: flicker add <component>');
         exit(1);
       }
       addComponent(component);
@@ -27,33 +31,13 @@ void main(List<String> arguments) {
     case 'remove':
       final component = argResults.command!.rest.firstOrNull;
       if (component == null) {
-        print('Usage: dart run flicker_cli remove <component>');
+        print('Usage: flicker remove <component>');
         exit(1);
       }
       removeComponent(component);
       break;
     default:
-      print('Usage: dart run flicker_cli <command>');
+      print('Usage: flicker <command>');
       print('Commands: init, add <component>, remove <component>');
   }
-}
-
-void initializeFlicker() {
-  final flickerPath = Directory('flicker');
-  if (flickerPath.existsSync()) {
-    print('Flicker is already initialized.');
-    return;
-  }
-
-  // Create the package
-  print('Creating Flicker package...');
-  Process.runSync('flutter', ['create', '--template=package', 'flicker']);
-
-  // Modify pubspec.yaml to include flicker as a dependency
-  final pubspecFile = File('pubspec.yaml');
-  if (pubspecFile.existsSync()) {
-    updatePubspec();
-  }
-
-  print('Flicker package initialized. Run `dart pub get`.');
 }

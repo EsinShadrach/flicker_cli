@@ -1,54 +1,43 @@
 import 'dart:io';
 
 void addComponent(String component) {
-  final source = File('components/$component.dart');
-  final destination = File('flicker/lib/widgets/$component.dart');
+  final mainPackagePath = '/Users/mac/codes/projects/2025/flicker_cli';
 
-  print(
-    '🔍 Checking if source exists: ${source.path} => ${source.existsSync()}',
+  // Source path to the component
+  final source = File(
+    '$mainPackagePath/components/$component/$component.dart',
   );
+
+  // Destination path in the CLI tool
+  final destination = File('flicker/lib/widgets/$component/$component.dart');
+
+  print('🔍 Checking if source exists');
 
   if (!source.existsSync()) {
     print('❌ Error: Source file does not exist!');
     return;
   }
 
-  destination.createSync(recursive: true);
+  // Ensure the destination directory exists
+  destination.parent.createSync(recursive: true);
+
+  // Copy the file from source to destination
   source.copySync(destination.path);
 
-  print('✅ Successfully copied $component.dart to flicker/lib/widgets/');
-}
+  // Add export statement to widgets.dart
+  final exportStatement = "export '$component/$component.dart';\n";
+  final widgetFile = File('flicker/lib/widgets/widgets.dart');
 
-void updatePubspec() {
-  final pubspecFile = File('pubspec.yaml');
+  if (widgetFile.existsSync()) {
+    widgetFile.writeAsStringSync(
+      exportStatement,
+      mode: FileMode.append,
+    );
 
-  if (!pubspecFile.existsSync()) {
-    print('❌ Error: pubspec.yaml not found!');
-    return;
+    print('✅ Added export for $component to widgets.dart');
+  } else {
+    print('❌ Error: widgets.dart file does not exist!');
   }
 
-  final lines = pubspecFile.readAsLinesSync();
-  final flickerEntry = '  flicker:\n    path: ./flicker/';
-
-  // Check if flicker is already added
-  if (lines.any((line) => line.contains('flicker:'))) {
-    print('✅ flicker is already in pubspec.yaml');
-    return;
-  }
-
-  // Find dependencies section
-  final dependenciesIndex = lines.indexWhere(
-    (line) => line.trim() == 'dependencies:',
-  );
-  if (dependenciesIndex == -1) {
-    print('❌ Error: dependencies section not found in pubspec.yaml!');
-    return;
-  }
-
-  // Insert flicker dependency after "dependencies:"
-  lines.insert(dependenciesIndex + 1, flickerEntry);
-
-  pubspecFile.writeAsStringSync(lines.join('\n'));
-
-  print('✅ Successfully added flicker to pubspec.yaml!');
+  print('✅ Successfully copied $component to flicker/lib/widgets/$component/');
 }

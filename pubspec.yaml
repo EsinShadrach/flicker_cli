@@ -1,16 +1,21 @@
 name: flicker_cli
 description: A sample command-line application.
-version: 1.0.0
+version: 1.0.2
 repository: https://github.com/EsinShadrach/flicker_cli
 
 environment:
-  sdk: ^3.7.0
+  # Switching to 43.6 cause the remove semi colons is ass.
+  sdk: ^3.6.0
 
 # Add regular dependencies here.
 dependencies:
+  # Adding flutter for test and remove it later.
+  flutter:
+    sdk: flutter
   io: ^1.0.5
   args: ^2.6.0
   path: ^1.9.1
+  infamous_squircle: ^0.2.0
   # path: ^1.8.0
 
 dev_dependencies:
@@ -19,4 +24,3 @@ dev_dependencies:
 
 executables:
   flicker: flicker_cli
-
